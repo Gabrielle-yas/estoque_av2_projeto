@@ -1,0 +1,3 @@
+INDEX VERSION 1.131+C:\GabiEstudos\estoque_av2_projeto\.metadata\.plugins\org.eclipse.jdt.core
+3042638952.index
+2291103575.index

@@ -1,8 +1,5 @@
 package estoque_av2_projeto;
 
-import estoque_av2_projeto.Produto;
-import estoque_av2_projeto.Conexao;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +20,7 @@ public class ProdutoDAO {
         stmt.setString(3, produto.getDescricao());
         stmt.setDouble(4, produto.getPreco());
         stmt.setInt(5, produto.getQuantidadeEstoque());
-        stmt.setString(6, produto.getCategoria());
+        stmt.setString(6, produto.getCategoria().name());
         stmt.executeUpdate();
         stmt.close();
     }
@@ -41,7 +38,7 @@ public class ProdutoDAO {
                     rs.getString("descricao"),
                     rs.getDouble("preco"),
                     rs.getInt("qnt_estoque"),
-                    rs.getString("categoria")
+                    Categoria.valueOf(rs.getString("categoria"))
             );
             lista.add(p);
         }
@@ -58,7 +55,7 @@ public class ProdutoDAO {
         stmt.setString(2, produto.getDescricao());
         stmt.setDouble(3, produto.getPreco());
         stmt.setInt(4, produto.getQuantidadeEstoque());
-        stmt.setString(5, produto.getCategoria());
+        stmt.setString(5, produto.getCategoria().name());
         stmt.setInt(6, produto.getId());
         stmt.executeUpdate();
         stmt.close();
@@ -86,7 +83,7 @@ public class ProdutoDAO {
                     rs.getString("descricao"),
                     rs.getDouble("preco"),
                     rs.getInt("qnt_estoque"),
-                    rs.getString("categoria")
+                    Categoria.valueOf(rs.getString("categoria"))
             );
         }
 

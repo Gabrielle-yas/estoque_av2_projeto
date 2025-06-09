@@ -1,6 +1,5 @@
 package estoque_av2_projeto;
 
-import estoque_av2_projeto.ProdutoDAO;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -8,13 +7,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 public class App {
     private JFrame frame;
     private JTextArea textArea;
     private ProdutoDAO produtoDAO;
-
+    private Usuario usuarioLogado;
 
     public App() {
     	    try {
@@ -23,6 +21,8 @@ public class App {
     	        JOptionPane.showMessageDialog(null, "Erro ao conectar com o banco: " + e.getMessage());
     	        System.exit(1);
     	    }
+    	    
+    	usuarioLogado = Login.realizarLogin();
     	
         frame = new JFrame("Sistema de gerenciamento de estoque");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -49,37 +49,46 @@ public class App {
         panel.add(btnSair);
 
         frame.add(panel, BorderLayout.SOUTH);
+        
+        Permissao permissao = usuarioLogado.getPermissao();
+        
+        btnCadastrar.setEnabled(permissao == Permissao.ADMINISTRADOR || permissao == Permissao.OPERADOR);
+        btnEditar.setEnabled(permissao == Permissao.ADMINISTRADOR || permissao == Permissao.OPERADOR);
+        btnExcluir.setEnabled(permissao == Permissao.ADMINISTRADOR);
+        btnVisualizar.setEnabled(true);
+        
+        
 
         btnCadastrar.addActionListener(new ActionListener() {
-            @Override
+        
             public void actionPerformed(ActionEvent e) {
                 cadastrarProduto();
             }
         });
 
         btnEditar.addActionListener(new ActionListener() {
-            @Override
+           
             public void actionPerformed(ActionEvent e) {
                 editarProduto();
             }
         });
 
         btnExcluir.addActionListener(new ActionListener() {
-            @Override
+          
             public void actionPerformed(ActionEvent e) {
                 excluirProduto();
             }
         });
 
         btnVisualizar.addActionListener(new ActionListener() {
-            @Override
+           
             public void actionPerformed(ActionEvent e) {
                 visualizarProdutos();
             }
         });
 
         btnSair.addActionListener(new ActionListener() {
-            @Override
+           
             public void actionPerformed(ActionEvent e) {
                 System.exit(0);
             }
@@ -95,8 +104,17 @@ public class App {
     	        String descricao = JOptionPane.showInputDialog("Descrição: ");
     	        double preco = Double.parseDouble(JOptionPane.showInputDialog("Preço: "));
     	        int qntEstoque = Integer.parseInt(JOptionPane.showInputDialog("Estoque: "));
-    	        String categoria = JOptionPane.showInputDialog("Categoria: ");
-
+    	        Categoria categoria = (Categoria) JOptionPane.showInputDialog(
+    	        		null,
+    	        		"Categoria: ",
+    	        		"Selecionar Categoria",
+    	        		JOptionPane.QUESTION_MESSAGE,
+    	        		null,
+    	        		Categoria.values(),
+    	        		Categoria.values() [0]
+    	        );
+    	        
+    	        
     	        Produto novoProduto = new Produto(id, nome, descricao, preco, qntEstoque, categoria);
     	        produtoDAO.inserir(novoProduto);
 
@@ -122,7 +140,8 @@ public class App {
     	        String novaDescricao = JOptionPane.showInputDialog("Nova Descrição: ", produtoParaEditar.getDescricao());
     	        double novoPreco = Double.parseDouble(JOptionPane.showInputDialog("Novo Preço: ", produtoParaEditar.getPreco()));
     	        int novaQntEstoque = Integer.parseInt(JOptionPane.showInputDialog("Novo Estoque: ", produtoParaEditar.getQuantidadeEstoque()));
-    	        String novaCategoria = JOptionPane.showInputDialog("Nova Categoria: ", produtoParaEditar.getCategoria());
+    	        Categoria novaCategoria = Categoria.valueOf(JOptionPane.showInputDialog("Nova Categoria: ", produtoParaEditar.getCategoria().name()));
+    	        produtoParaEditar.setCategoria(novaCategoria);
 
     	        produtoParaEditar.setNome(novoNome);
     	        produtoParaEditar.setDescricao(novaDescricao);
